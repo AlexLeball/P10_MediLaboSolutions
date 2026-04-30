@@ -10,6 +10,6 @@ namespace Patient.Infrastructure.Data
         {
         }
 
-        public DbSet<Domain.Entities.Patient> Patients { get; set; }
+        public DbSet<Domain.Entities.PatientEntity> Patients { get; set; }
     }
 }

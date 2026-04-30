@@ -1,12 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Patient.Domain.Entities;
+using Patient.Infrastructure.Data;
+
 
 namespace Patient.Infrastructure.Repositories
 {
-    internal class PatientRepository
+    public class PatientRepository : IPatientRepository
     {
+        private readonly AppDbContext _context;
+
+        public PatientRepository(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        public List<PatientEntity> GetAll() => _context.Patients.ToList();
+
+        public PatientEntity GetById(int id) => _context.Patients.Find(id);
+
+        public void Add(PatientEntity  patient)
+        {
+            _context.Patients.Add(patient);
+            _context.SaveChanges();
+        }
+
+        public void Update(PatientEntity patient)
+        {
+            _context.Patients.Update(patient);
+            _context.SaveChanges();
+        }
     }
+
 }

@@ -12,7 +12,7 @@ using Patient.Infrastructure.Data;
 namespace Patient.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260430125535_InitialCreate")]
+    [Migration("20260430140451_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace Patient.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Patient.Domain.Entities.Patient", b =>
+            modelBuilder.Entity("Patient.Domain.Entities.PatientEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

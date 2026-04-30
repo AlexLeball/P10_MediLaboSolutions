@@ -3,10 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Patient.Application.Interfaces;
+using Patient.Domain.Entities;
 
 namespace Patient.Application.Services
 {
-    internal class PatientServices
+
+    public class PatientService : IPatientService
     {
+        private readonly IPatientRepository _repository;
+
+        public PatientService(IPatientRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<PatientEntity> GetAll() => _repository.GetAll();
+
+        public PatientEntity GetById(int id) => _repository.GetById(id);
+
+        public void Add(PatientEntity patient) => _repository.Add(patient);
+
+        public void Update(PatientEntity patient) => _repository.Update(patient);
     }
+
 }

@@ -22,7 +22,7 @@ namespace Patient.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Patient.Domain.Entities.Patient", b =>
+            modelBuilder.Entity("Patient.Domain.Entities.PatientEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
