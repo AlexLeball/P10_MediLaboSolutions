@@ -1,0 +1,6 @@
+services:
+  frontend.web:
+    image: ${DOCKER_REGISTRY-}frontendweb
+    build:
+      context: .
+      dockerfile: Frontend.Web/Dockerfile
