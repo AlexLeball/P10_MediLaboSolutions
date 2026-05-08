@@ -2,10 +2,13 @@
 using System;
 using System.Collections.Generic;
 
-public interface IPatientRepository
+namespace Patient.Application.Interfaces
 {
-    List<PatientEntity> GetAll();
-    PatientEntity GetById(int id);
-    void Add(PatientEntity patient);
-    void Update(PatientEntity patient);
+    public interface IPatientRepository
+    {
+        List<PatientEntity> GetAll();
+        PatientEntity GetById(int id);
+        void Add(PatientEntity patient);
+        void Update(PatientEntity patient);
+    }
 }

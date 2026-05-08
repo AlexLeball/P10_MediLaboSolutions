@@ -1,6 +1,6 @@
 ﻿using Patient.Domain.Entities;
 using Patient.Infrastructure.Data;
-
+using Patient.Application.Interfaces;
 
 namespace Patient.Infrastructure.Repositories
 {
