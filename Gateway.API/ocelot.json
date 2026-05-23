@@ -1,7 +1,18 @@
 {
   "Routes": [
     {
-      "UpstreamPathTemplate": "/patients",
+      "DownstreamPathTemplate": "/api/auth/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "patient.api",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/auth/{everything}",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/patient",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -9,7 +20,13 @@
           "Host": "patient.api",
           "Port": 8080
         }
-      ]
+      ],
+      "UpstreamPathTemplate": "/api/patient",
+      "UpstreamHttpMethod": [ "POST", "GET" ],
+
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      }
     }
   ],
   "GlobalConfiguration": {

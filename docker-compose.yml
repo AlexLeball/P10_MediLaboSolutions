@@ -28,7 +28,10 @@ services:
     environment:
       ASPNETCORE_URLS: http://+:8080
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=master;User Id=sa;Password=MySuperStrong!Passw0rd;TrustServerCertificate=True;"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=PatientDb;User Id=sa;Password=MySuperStrong!Passw0rd;TrustServerCertificate=True;"
+      Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
+      Jwt__Issuer: PatientAPI
+      Jwt__Audience: PatientClient
     command: ["dotnet", "Patient.API.dll"]
 
   gateway.api:
@@ -39,6 +42,9 @@ services:
       - "5000:8080"
     environment:
       ASPNETCORE_URLS: http://+:8080
+      Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
+      Jwt__Issuer: PatientAPI
+      Jwt__Audience: PatientClient
 
   frontend.web:
     build:
@@ -46,5 +52,3 @@ services:
       dockerfile: Frontend.Web/Dockerfile
     ports:
       - "5002:8080"
-    environment:
-      ASPNETCORE_URLS: http://+:8080

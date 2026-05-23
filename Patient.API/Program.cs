@@ -6,44 +6,48 @@ using Patient.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Database
+// ========================
+// DATABASE
+// ========================
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sql => sql.EnableRetryOnFailure(
-            maxRetryCount: 10,
-            maxRetryDelay: TimeSpan.FromSeconds(5),
-            errorNumbersToAdd: null)
+        builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 
-// DI
+// ========================
+// DEPENDENCY INJECTION
+// ========================
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 
+// ========================
+// CONTROLLERS
+// ========================
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Swagger
+// ========================
+// PIPELINE
+// ========================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseAuthorization();
+app.UseAuthorization(); // optional (can even remove)
+
 app.MapControllers();
 
-
-// =====================================================
-// DOCKER-SAFE DB STARTUP (FIXED VERSION)
-// =====================================================
+// ========================
+// DB MIGRATION
+// ========================
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    // NOW SAFE = apply migrations
     db.Database.Migrate();
 }
 

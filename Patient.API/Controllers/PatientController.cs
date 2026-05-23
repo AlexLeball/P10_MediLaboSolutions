@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Patient.Application.Interfaces;
 using Patient.Domain.Entities;
 
@@ -25,10 +26,8 @@ namespace Patient.API.Controllers
         public IActionResult GetById(int id)
         {
             var patient = _service.GetById(id);
-
             if (patient == null)
                 return NotFound();
-
             return Ok(patient);
         }
 
@@ -36,15 +35,13 @@ namespace Patient.API.Controllers
         public IActionResult Create(PatientEntity patient)
         {
             _service.Add(patient);
-
-            return Ok();
+            return CreatedAtAction(nameof(GetById), new { id = patient.Id }, patient);
         }
 
         [HttpPut]
         public IActionResult Update(PatientEntity patient)
         {
             _service.Update(patient);
-
             return Ok();
         }
     }
