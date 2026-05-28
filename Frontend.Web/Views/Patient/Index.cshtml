@@ -1,0 +1,24 @@
+﻿@model List<Frontend.Web.Models.PatientDto>
+<h2>Patients</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Birth Date</th>
+            <th>Gender</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.FirstName</td>
+                <td>@p.LastName</td>
+                <td>@p.BirthDate.ToShortDateString()</td>
+                <td>@p.Gender</td>
+            </tr>
+        }
+    </tbody>
+</table>

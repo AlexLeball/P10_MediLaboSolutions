@@ -2,7 +2,7 @@
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/auth/{everything}",
-      "DownstreamScheme": "http",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
@@ -13,8 +13,20 @@
       "UpstreamHttpMethod": [ "POST" ]
     },
     {
+      "DownstreamPathTemplate": "/api/patient/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7267
+        }
+      ],
+      "UpstreamPathTemplate": "/api/patient/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/patient",
-      "DownstreamScheme": "http",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
@@ -22,10 +34,10 @@
         }
       ],
       "UpstreamPathTemplate": "/api/patient",
-      "UpstreamHttpMethod": [ "GET", "POST" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ]
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:5000"
+    "BaseUrl": "http://localhost:5292"
   }
 }

@@ -91,6 +91,13 @@ builder.Services.AddAuthorization();
 // ========================
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -147,6 +154,7 @@ app.Use(async (ctx, next) =>
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 
 app.MapControllers();
 
@@ -157,6 +165,13 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    foreach (var role in new[] { "Admin", "User" })
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole(role));
+    }
 }
 
 app.Run();

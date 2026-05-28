@@ -1,0 +1,97 @@
+﻿using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using Frontend.Web.Models;
+
+namespace Frontend.Web.Services
+{
+    public class PatientApiService
+    {
+        private readonly HttpClient _http;
+
+        public PatientApiService(HttpClient http)
+        {
+            _http = http;
+        }
+
+        public async Task<string?> LoginAsync(string email, string password)
+        {
+            var response = await _http.PostAsync(
+                "/api/auth/login",
+                new StringContent(
+                    JsonSerializer.Serialize(new { email, password }),
+                    Encoding.UTF8,
+                    "application/json"
+                )
+            );
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+
+            return doc.RootElement.GetProperty("token").GetString();
+        }
+
+        public async Task<List<PatientDto>?> GetPatientsAsync(string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/patient");
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _http.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<List<PatientDto>>();
+        }
+
+        public async Task<PatientDto?> GetPatientByIdAsync(int id, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/patient/{id}");
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _http.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<PatientDto>();
+        }
+
+        public async Task<bool> CreatePatientAsync(PatientDto dto, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/patient");
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            request.Content = new StringContent(
+                JsonSerializer.Serialize(dto),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await _http.SendAsync(request);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdatePatientAsync(PatientDto dto, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, "/api/patient");
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            request.Content = new StringContent(
+                JsonSerializer.Serialize(dto),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await _http.SendAsync(request);
+            return response.IsSuccessStatusCode;
+        }
+    }
+}
