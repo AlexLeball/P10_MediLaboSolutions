@@ -5,8 +5,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "patient.api",
-          "Port": 8080
+          "Host": "localhost",
+          "Port": 7267
         }
       ],
       "UpstreamPathTemplate": "/api/auth/{everything}",
@@ -17,19 +17,15 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "patient.api",
-          "Port": 8080
+          "Host": "localhost",
+          "Port": 7267
         }
       ],
       "UpstreamPathTemplate": "/api/patient",
-      "UpstreamHttpMethod": [ "POST", "GET" ],
-
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer"
-      }
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://gateway.api:8080"
+    "BaseUrl": "http://localhost:5000"
   }
 }

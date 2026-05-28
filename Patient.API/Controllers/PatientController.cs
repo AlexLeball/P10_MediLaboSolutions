@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Patient.Application.Interfaces;
 using Patient.Domain.Entities;
 
 namespace Patient.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class PatientController : ControllerBase
@@ -19,6 +21,7 @@ namespace Patient.API.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
+            Console.WriteLine("CONTROLLER HIT");
             return Ok(_service.GetAll());
         }
 
