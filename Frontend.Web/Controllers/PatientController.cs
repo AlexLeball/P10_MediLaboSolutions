@@ -68,7 +68,7 @@ namespace Frontend.Web.Controllers
 
             await _api.AddNoteAsync(dto, token);
 
-            return RedirectToAction("Edit", new { id = dto.PatientId });
+            return RedirectToAction("Details", new { id = dto.PatientId });
         }
         [HttpGet]
         public async Task<IActionResult> Details(int id)
