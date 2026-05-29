@@ -11,7 +11,7 @@ builder.Services.AddHttpClient<PatientApiService>(client =>
     client.BaseAddress = new Uri(builder.Configuration["GatewayUrl"]!);
 });
 
-// SESSION (IMPORTANT)
+// SESSION 
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -31,16 +31,16 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// ORDER MATTERS (THIS IS IMPORTANT)
+// ORDER MATTERS (important)
 app.UseRouting();
 
 app.UseSession();
 
-app.UseAuthentication();   // add now or later (important for JWT/cookies)
+app.UseAuthentication();  //jwt cookies
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Patient}/{action=Index}/{id?}");
 
 app.Run();

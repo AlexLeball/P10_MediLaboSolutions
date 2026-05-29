@@ -41,10 +41,14 @@ namespace Patient.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = patient.Id }, patient);
         }
 
-        [HttpPut]
-        public IActionResult Update(PatientEntity patient)
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] PatientEntity patient)
         {
+            if (id != patient.Id)
+                return BadRequest();
+
             _service.Update(patient);
+
             return Ok();
         }
     }

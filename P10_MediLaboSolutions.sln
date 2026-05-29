@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frontend.Web", "Frontend.We
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes.API", "Notes.API\Notes.API.csproj", "{B179F732-9EE6-45CC-A4F3-71C653511AB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B179F732-9EE6-45CC-A4F3-71C653511AB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B179F732-9EE6-45CC-A4F3-71C653511AB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B179F732-9EE6-45CC-A4F3-71C653511AB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B179F732-9EE6-45CC-A4F3-71C653511AB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +74,7 @@ Global
 		{7542B4D1-214E-400C-BDC5-7F99A16FC38E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{726D0EB6-8D70-4242-9883-51A5D4E7A7C0} = {ADECE526-2094-45DF-B6A4-5EF621550DC0}
 		{2E53DD4B-FD57-416D-81DC-8EAB17E37DB4} = {7D7D01C6-59C8-442A-B9FF-AFB203E80AC0}
+		{B179F732-9EE6-45CC-A4F3-71C653511AB8} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3097FD22-6152-4E4C-8293-26EA68B190ED}

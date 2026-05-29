@@ -78,20 +78,12 @@ namespace Frontend.Web.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdatePatientAsync(PatientDto dto, string token)
+        public async Task UpdatePatientAsync(PatientDto dto, string token)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, "/api/patient");
-            request.Headers.Authorization =
+            _http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
-            request.Content = new StringContent(
-                JsonSerializer.Serialize(dto),
-                Encoding.UTF8,
-                "application/json"
-            );
-
-            var response = await _http.SendAsync(request);
-            return response.IsSuccessStatusCode;
+            await _http.PutAsJsonAsync($"/api/patient/{dto.Id}", dto);
         }
     }
 }
