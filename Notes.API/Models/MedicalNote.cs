@@ -1,4 +1,4 @@
-﻿namespace Notes.API.Entities
+﻿namespace Notes.API.Models
 {
     public class MedicalNote
     {

@@ -85,5 +85,32 @@ namespace Frontend.Web.Services
 
             await _http.PutAsJsonAsync($"/api/patient/{dto.Id}", dto);
         }
+
+        public async Task AddNoteAsync(MedicalNoteDto dto, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/notes");
+
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            request.Content = new StringContent(
+                JsonSerializer.Serialize(dto),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            await _http.SendAsync(request);
+        }
+        public async Task<List<MedicalNoteDto>> GetNotesAsync(int patientId, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/notes/{patientId}");
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _http.SendAsync(request);
+
+            return await response.Content.ReadFromJsonAsync<List<MedicalNoteDto>>();
+        }
+
     }
 }

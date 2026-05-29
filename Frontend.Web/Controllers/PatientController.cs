@@ -60,5 +60,35 @@ namespace Frontend.Web.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddNote(MedicalNoteDto dto)
+        {
+            var token = HttpContext.Session.GetString("JWT");
+
+            await _api.AddNoteAsync(dto, token);
+
+            return RedirectToAction("Edit", new { id = dto.PatientId });
+        }
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var token = HttpContext.Session.GetString("JWT");
+
+            if (token == null)
+                return RedirectToAction("Login", "Auth");
+
+            var patient = await _api.GetPatientByIdAsync(id, token);
+            var notes = await _api.GetNotesAsync(id, token);
+
+            var vm = new PatientDetailsViewModel
+            {
+                Patient = patient,
+                Notes = notes
+            };
+
+            return View(vm);
+        }
+
     }
 }

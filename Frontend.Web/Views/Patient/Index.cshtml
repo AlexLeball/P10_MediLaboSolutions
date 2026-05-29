@@ -29,6 +29,13 @@
                        class="btn btn-sm btn-primary">
                         Edit
                     </a>
+
+                    <a asp-controller="Patient"
+                       asp-action="Details"
+                       asp-route-id="@p.Id"
+                       class="btn btn-warning">
+                        Details
+                    </a>
                 </td>
             </tr>
         }
