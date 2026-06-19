@@ -167,10 +167,19 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    foreach (var role in new[] { "Admin", "User" })
+    foreach (var role in new[] { "Admin", "Organiser", "Practitioner" })
     {
         if (!await roleManager.RoleExistsAsync(role))
             await roleManager.CreateAsync(new IdentityRole(role));
+    }
+
+    // Seed a default admin if none exists
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    if (await userManager.FindByEmailAsync("admin@medilabo.com") == null)
+    {
+        var admin = new ApplicationUser { UserName = "admin@medilabo.com", Email = "admin@medilabo.com" };
+        await userManager.CreateAsync(admin, "Admin1234!");
+        await userManager.AddToRoleAsync(admin, "Admin");
     }
 }
 

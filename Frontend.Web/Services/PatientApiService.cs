@@ -112,5 +112,27 @@ namespace Frontend.Web.Services
             return await response.Content.ReadFromJsonAsync<List<MedicalNoteDto>>();
         }
 
+        public async Task<(bool Success, string? Error)> RegisterAsync(
+            string email, string password, string role, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/register");
+
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            request.Content = new StringContent(
+                JsonSerializer.Serialize(new { email, password, role }),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await _http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var body = await response.Content.ReadAsStringAsync();
+            return (false, body);
+        }
     }
 }

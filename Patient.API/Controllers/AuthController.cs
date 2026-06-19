@@ -10,6 +10,7 @@ using System.Text;
 namespace Patient.API.Controllers
 {
     public record LoginRequest(string Email, string Password);
+    public record RegisterRequest(string Email, string Password, string Role);
 
     [ApiController]
     [Route("api/[controller]")]
@@ -28,22 +29,20 @@ namespace Patient.API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost("register")]
-        public async Task<IActionResult> Register(string email, string password)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            var user = new ApplicationUser
-            {
-                UserName = email,
-                Email = email
-            };
+            var allowedRoles = new[] { "Organiser", "Practitioner" };
+            if (!allowedRoles.Contains(request.Role))
+                return BadRequest($"Role must be one of: {string.Join(", ", allowedRoles)}");
 
-            var result = await _userManager.CreateAsync(user, password);
+            var user = new ApplicationUser { UserName = request.Email, Email = request.Email };
+            var result = await _userManager.CreateAsync(user, request.Password);
 
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
-            
-            await _userManager.AddToRoleAsync(user, "User");
 
-            return Ok("User created");
+            await _userManager.AddToRoleAsync(user, request.Role);
+            return Ok($"User created with role '{request.Role}'");
         }
 
         [HttpPost("login")]
@@ -71,7 +70,6 @@ namespace Patient.API.Controllers
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_config["Jwt:Key"]!)
             );
-
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -80,7 +78,8 @@ namespace Patient.API.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email!)
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.Name, user.UserName!)  // used as Author in notes
             };
             claims.AddRange(roleClaims);
 
@@ -88,7 +87,8 @@ namespace Patient.API.Controllers
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(double.Parse(_config["Jwt:DurationInMinutes"]!)),
+                expires: DateTime.UtcNow.AddMinutes(
+                    double.Parse(_config["Jwt:DurationInMinutes"]!)),
                 signingCredentials: creds
             );
 
