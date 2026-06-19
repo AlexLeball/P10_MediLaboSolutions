@@ -29,6 +29,9 @@
                             @if (Frontend.Web.Helpers.JwtSessionHelper.IsAdmin(Context.Session.GetString("JWT")!))
                             {
                                 <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Auth" asp-action="Users">Users</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Create User</a>
                                 </li>
                             }

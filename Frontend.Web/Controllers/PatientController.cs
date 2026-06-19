@@ -22,21 +22,18 @@ namespace Frontend.Web.Controllers
                 return RedirectToAction("Login", "Auth");
 
             var patients = await _api.GetPatientsAsync(token);
-
             return View(patients);
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var token = HttpContext.Session.GetString("JWT");
 
-            if (token == null)
-                return RedirectToAction("Login", "Auth");
+            if (token == null) return RedirectToAction("Login", "Auth");
+            if (!JwtSessionHelper.CanManagePatients(token)) return Forbid();
 
-            if (!JwtSessionHelper.CanManagePatients(token))
-                return Forbid();
-
+            ViewBag.Practitioners = await _api.GetPractitionersAsync(token);
             return View(new PatientDto { BirthDate = DateTime.Today.AddDays(-1) });
         }
 
@@ -45,14 +42,15 @@ namespace Frontend.Web.Controllers
         {
             var token = HttpContext.Session.GetString("JWT");
 
-            if (token == null)
-                return RedirectToAction("Login", "Auth");
-
-            if (!JwtSessionHelper.CanManagePatients(token))
-                return Forbid();
+            if (token == null) return RedirectToAction("Login", "Auth");
+            if (!JwtSessionHelper.CanManagePatients(token)) return Forbid();
 
             if (!ModelState.IsValid)
+            {
+                // Repopulate dropdown on validation failure
+                ViewBag.Practitioners = await _api.GetPractitionersAsync(token);
                 return View(dto);
+            }
 
             await _api.CreatePatientAsync(dto, token);
             return RedirectToAction("Index");
@@ -63,7 +61,13 @@ namespace Frontend.Web.Controllers
         {
             var token = HttpContext.Session.GetString("JWT");
 
+            if (token == null) return RedirectToAction("Login", "Auth");
+            if (!JwtSessionHelper.CanManagePatients(token)) return Forbid();
+
             var patient = await _api.GetPatientByIdAsync(id, token);
+            if (patient == null) return NotFound();
+
+            ViewBag.Practitioners = await _api.GetPractitionersAsync(token);
             return View(patient);
         }
 
@@ -71,6 +75,15 @@ namespace Frontend.Web.Controllers
         public async Task<IActionResult> Edit(PatientDto dto)
         {
             var token = HttpContext.Session.GetString("JWT");
+
+            if (token == null) return RedirectToAction("Login", "Auth");
+
+            if (!ModelState.IsValid)
+            {
+                // Repopulate dropdown on validation failure
+                ViewBag.Practitioners = await _api.GetPractitionersAsync(token);
+                return View(dto);
+            }
 
             await _api.UpdatePatientAsync(dto, token);
             return RedirectToAction("Index");
@@ -81,12 +94,8 @@ namespace Frontend.Web.Controllers
         {
             var token = HttpContext.Session.GetString("JWT");
 
-            if (token == null)
-                return RedirectToAction("Login", "Auth");
-
-            // Organisers cannot add notes
-            if (!JwtSessionHelper.CanViewNotes(token))
-                return Forbid();
+            if (token == null) return RedirectToAction("Login", "Auth");
+            if (!JwtSessionHelper.CanViewNotes(token)) return Forbid();
 
             await _api.AddNoteAsync(dto, token);
             return RedirectToAction("Details", new { id = dto.PatientId });
@@ -97,20 +106,23 @@ namespace Frontend.Web.Controllers
         {
             var token = HttpContext.Session.GetString("JWT");
 
-            if (token == null)
-                return RedirectToAction("Login", "Auth");
+            if (token == null) return RedirectToAction("Login", "Auth");
 
             var patient = await _api.GetPatientByIdAsync(id, token);
-
-            // Only fetch notes for roles that are allowed to see them
             var notes = JwtSessionHelper.CanViewNotes(token)
                 ? await _api.GetNotesAsync(id, token)
                 : new List<MedicalNoteDto>();
 
+            var practitioners = await _api.GetPractitionersAsync(token);
+            var practitionerName = practitioners
+                .FirstOrDefault(p => p.Id == patient?.PractitionerId)
+                ?.Name ?? "Unassigned";
+
             return View(new PatientDetailsViewModel
             {
                 Patient = patient,
-                Notes = notes
+                Notes = notes,
+                PractitionerName = practitionerName
             });
         }
     }
