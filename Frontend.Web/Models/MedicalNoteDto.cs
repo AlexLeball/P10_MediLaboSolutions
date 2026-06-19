@@ -1,6 +1,6 @@
-﻿namespace Notes.API.Entities
+﻿namespace Frontend.Web.Models
 {
-    public class MedicalNote
+    public class MedicalNoteDto
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
@@ -10,6 +10,6 @@
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public string Author { get; set; } = string.Empty; // doctor
+        public string Author { get; set; } = string.Empty;
     }
 }

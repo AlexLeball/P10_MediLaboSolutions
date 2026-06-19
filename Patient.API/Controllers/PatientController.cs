@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Patient.Application.Interfaces;
 using Patient.Domain.Entities;
+using System.Security.Claims;
 
 namespace Patient.API.Controllers
 {
@@ -13,28 +13,44 @@ namespace Patient.API.Controllers
     {
         private readonly IPatientService _service;
 
-        public PatientController(IPatientService service)
-        {
-            _service = service;
-        }
+        public PatientController(IPatientService service) => _service = service;
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Organiser,Practitioner")]
         public IActionResult GetAll()
         {
-            Console.WriteLine("CONTROLLER HIT");
+            // Practitioner only sees their own patients
+            if (User.IsInRole("Practitioner"))
+            {
+                var practitionerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return Ok(_service.GetByPractitionerId(practitionerId!));
+            }
+
             return Ok(_service.GetAll());
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Organiser,Practitioner")]
         public IActionResult GetById(int id)
         {
             var patient = _service.GetById(id);
+
             if (patient == null)
                 return NotFound();
+
+            // Practitioner can only access their own patients
+            if (User.IsInRole("Practitioner"))
+            {
+                var practitionerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (patient.PractitionerId != practitionerId)
+                    return Forbid();
+            }
+
             return Ok(patient);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Organiser")]
         public IActionResult Create(PatientEntity patient)
         {
             _service.Add(patient);
@@ -42,13 +58,11 @@ namespace Patient.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Organiser")]
         public IActionResult Update(int id, [FromBody] PatientEntity patient)
         {
-            if (id != patient.Id)
-                return BadRequest();
-
+            if (id != patient.Id) return BadRequest();
             _service.Update(patient);
-
             return Ok();
         }
     }

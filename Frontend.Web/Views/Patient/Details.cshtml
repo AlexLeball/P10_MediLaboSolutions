@@ -1,0 +1,45 @@
+﻿@model Frontend.Web.Models.PatientDetailsViewModel
+@using Frontend.Web.Helpers
+
+<h2>Patient Details</h2>
+
+<div class="card p-3 mb-3">
+    <h4>@Model.Patient.FirstName @Model.Patient.LastName</h4>
+    <p><b>Birth Date:</b> @Model.Patient.BirthDate.ToShortDateString()</p>
+    <p><b>Gender:</b> @Model.Patient.Gender</p>
+    <p><b>Address:</b> @Model.Patient.Address</p>
+    <p><b>Phone:</b> @Model.Patient.PhoneNumber</p>
+    @if (!JwtSessionHelper.IsPractitioner(Context.Session.GetString("JWT") ?? ""))
+    {
+        <p><b>Practitioner:</b> @Model.PractitionerName</p>
+    }
+</div>
+
+@if (JwtSessionHelper.CanViewNotes(Context.Session.GetString("JWT") ?? ""))
+{
+    <hr />
+
+    <h3>Medical Notes</h3>
+
+    @foreach (var note in Model.Notes)
+    {
+        <div class="border p-2 mb-2">
+            <strong>@Model.Patient.FirstName @Model.Patient.LastName</strong>
+            <pre style="white-space: pre-wrap">@note.Content</pre>
+            <small>Created: @note.CreatedAt</small>
+            <br />
+            <small>By: @note.Author</small>
+        </div>
+    }
+
+    <hr />
+
+    <h4>Add Note</h4>
+
+    <form asp-action="AddNote" method="post">
+        <input type="hidden" name="PatientId" value="@Model.Patient.Id" />
+        <textarea name="Content" class="form-control"></textarea>
+        <button class="btn btn-primary mt-2">Add Note</button>
+    </form>
+}
+

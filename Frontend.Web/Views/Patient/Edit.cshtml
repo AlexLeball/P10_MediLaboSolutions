@@ -1,4 +1,5 @@
 ﻿@model Frontend.Web.Models.PatientDto
+@using Frontend.Web.Models
 
 @{
     ViewData["Title"] = "Edit Patient";
@@ -6,8 +7,7 @@
 
 <h2>Edit Patient</h2>
 
-<form asp-action="Edit" method="post">
-
+<form asp-action="Edit" method="post" style="max-width: 500px;">
     <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
@@ -22,12 +22,14 @@
 
     <div class="mb-3">
         <label asp-for="BirthDate" class="form-label"></label>
-        <input asp-for="BirthDate" type="date" class="form-control" />
+        <input asp-for="BirthDate" type="date" class="form-control"
+               min="1900-01-01"
+               max="@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")" />
     </div>
 
     <div class="mb-3">
         <label asp-for="Gender" class="form-label"></label>
-        <select asp-for="Gender" class="form-control">
+        <select asp-for="Gender" class="form-select">
             <option value="M">Male</option>
             <option value="F">Female</option>
         </select>
@@ -43,12 +45,17 @@
         <input asp-for="PhoneNumber" class="form-control" />
     </div>
 
-    <button type="submit" class="btn btn-primary">
-        Save
-    </button>
+    <div class="mb-3">
+        <label asp-for="PractitionerId" class="form-label">Practitioner</label>
+        <select asp-for="PractitionerId" class="form-select">
+            <option value="">-- Assign a practitioner --</option>
+            @foreach (var p in (List<PractitionerDto>)ViewBag.Practitioners)
+            {
+                <option value="@p.Id">@p.Name</option>
+            }
+        </select>
+    </div>
 
-    <a asp-action="Index" class="btn btn-secondary">
-        Cancel
-    </a>
-
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
