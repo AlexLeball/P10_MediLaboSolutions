@@ -9,6 +9,10 @@
     <p><b>Gender:</b> @Model.Patient.Gender</p>
     <p><b>Address:</b> @Model.Patient.Address</p>
     <p><b>Phone:</b> @Model.Patient.PhoneNumber</p>
+    @if (!JwtSessionHelper.IsPractitioner(Context.Session.GetString("JWT") ?? ""))
+    {
+        <p><b>Practitioner:</b> @Model.PractitionerName</p>
+    }
 </div>
 
 @if (JwtSessionHelper.CanViewNotes(Context.Session.GetString("JWT") ?? ""))

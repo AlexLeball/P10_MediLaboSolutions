@@ -7,7 +7,8 @@ namespace Patient.Application.Interfaces
     public interface IPatientRepository
     {
         List<PatientEntity> GetAll();
-        PatientEntity GetById(int id);
+        List<PatientEntity> GetByPractitionerId(string practitionerId);
+        PatientEntity? GetById(int id);
         void Add(PatientEntity patient);
         void Update(PatientEntity patient);
     }

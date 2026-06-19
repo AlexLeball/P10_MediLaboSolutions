@@ -1,14 +1,11 @@
-@model Frontend.Web.Models.RegisterViewModel
+@model Frontend.Web.Models.EditUserViewModel
 
-<h2>Create User Account</h2>
+<h2>Edit User Account</h2>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
+<form asp-action="EditUser" method="post" style="max-width: 400px;">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<form asp-action="Register" method="post" style="max-width: 400px;">
-    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+    <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
         <label asp-for="FullName" class="form-label"></label>
@@ -23,20 +20,21 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="Password" class="form-label"></label>
-        <input asp-for="Password" type="password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
         <label asp-for="Role" class="form-label"></label>
         <select asp-for="Role" class="form-select">
-            <option value="">-- Select a role --</option>
             <option value="Organiser">Organiser</option>
             <option value="Practitioner">Practitioner</option>
         </select>
         <span asp-validation-for="Role" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Create User</button>
+    <div class="mb-3">
+        <label asp-for="NewPassword" class="form-label"></label>
+        <input asp-for="NewPassword" type="password" class="form-control"
+               placeholder="Leave blank to keep current password" />
+        <span asp-validation-for="NewPassword" class="text-danger"></span>
+    </div>
+
+    <a asp-action="Users" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>

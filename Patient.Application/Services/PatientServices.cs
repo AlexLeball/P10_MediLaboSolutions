@@ -20,7 +20,10 @@ namespace Patient.Application.Services
 
         public List<PatientEntity> GetAll() => _repository.GetAll();
 
-        public PatientEntity GetById(int id) => _repository.GetById(id);
+        public List<PatientEntity> GetByPractitionerId(string practitionerId) =>
+            _repository.GetByPractitionerId(practitionerId);
+
+        public PatientEntity? GetById(int id) => _repository.GetById(id);
 
         public void Add(PatientEntity patient) => _repository.Add(patient);
 

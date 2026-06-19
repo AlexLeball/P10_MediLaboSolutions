@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Patient.Application.Interfaces;
 using Patient.Domain.Entities;
+using System.Security.Claims;
 
 namespace Patient.API.Controllers
 {
@@ -16,14 +17,36 @@ namespace Patient.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin,Organiser,Practitioner")]
-        public IActionResult GetAll() => Ok(_service.GetAll());
+        public IActionResult GetAll()
+        {
+            // Practitioner only sees their own patients
+            if (User.IsInRole("Practitioner"))
+            {
+                var practitionerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return Ok(_service.GetByPractitionerId(practitionerId!));
+            }
+
+            return Ok(_service.GetAll());
+        }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Organiser,Practitioner")]
         public IActionResult GetById(int id)
         {
             var patient = _service.GetById(id);
-            return patient == null ? NotFound() : Ok(patient);
+
+            if (patient == null)
+                return NotFound();
+
+            // Practitioner can only access their own patients
+            if (User.IsInRole("Practitioner"))
+            {
+                var practitionerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (patient.PractitionerId != practitionerId)
+                    return Forbid();
+            }
+
+            return Ok(patient);
         }
 
         [HttpPost]

@@ -18,5 +18,8 @@ namespace Patient.Domain.Entities
         [Required] public string Gender { get; set; } = string.Empty;
         public string? Address { get; set; }
         public string? PhoneNumber { get; set; }
+
+        // FK to ApplicationUser.Id — nullable until assigned by Organiser
+        public string? PractitionerId { get; set; }
     }
 }

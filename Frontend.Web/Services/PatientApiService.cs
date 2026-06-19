@@ -113,15 +113,12 @@ namespace Frontend.Web.Services
         }
 
         public async Task<(bool Success, string? Error)> RegisterAsync(
-            string email, string password, string role, string token)
+            string email, string password, string role, string fullName, string token)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/register");
-
-            request.Headers.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
-
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             request.Content = new StringContent(
-                JsonSerializer.Serialize(new { email, password, role }),
+                JsonSerializer.Serialize(new { email, password, role, fullName }),
                 Encoding.UTF8,
                 "application/json"
             );
@@ -131,8 +128,73 @@ namespace Frontend.Web.Services
             if (response.IsSuccessStatusCode)
                 return (true, null);
 
-            var body = await response.Content.ReadAsStringAsync();
-            return (false, body);
+            return (false, await response.Content.ReadAsStringAsync());
+        }
+
+        public async Task<List<PractitionerDto>> GetPractitionersAsync(string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/auth/practitioners");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _http.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                return new List<PractitionerDto>();
+
+            return await response.Content.ReadFromJsonAsync<List<PractitionerDto>>()
+                   ?? new List<PractitionerDto>();
+        }
+
+        public async Task<List<UserDto>> GetUsersAsync(string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/auth/users");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _http.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                return new List<UserDto>();
+
+            return await response.Content.ReadFromJsonAsync<List<UserDto>>()
+                   ?? new List<UserDto>();
+        }
+
+        public async Task<UserDto?> GetUserByIdAsync(string id, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/auth/users/{id}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _http.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<UserDto>();
+        }
+
+        public async Task<(bool Success, string? Error)> UpdateUserAsync(
+            EditUserViewModel model, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, $"/api/auth/users/{model.Id}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Content = new StringContent(
+                JsonSerializer.Serialize(new
+                {
+                    model.FullName,
+                    model.Email,
+                    model.Role,
+                    NewPassword = model.NewPassword
+                }),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await _http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            return (false, await response.Content.ReadAsStringAsync());
         }
     }
 }
