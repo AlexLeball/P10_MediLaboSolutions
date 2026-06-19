@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Frontend.Web.Services;
+﻿using Frontend.Web.Helpers;
 using Frontend.Web.Models;
+using Frontend.Web.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Frontend.Web.Controllers
 {
@@ -28,7 +29,15 @@ namespace Frontend.Web.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            var token = HttpContext.Session.GetString("JWT");
+
+            if (token == null)
+                return RedirectToAction("Login", "Auth");
+
+            if (!JwtSessionHelper.CanManagePatients(token))
+                return Forbid();
+
+            return View(new PatientDto { BirthDate = DateTime.Today.AddDays(-1) });
         }
 
         [HttpPost]
@@ -36,8 +45,16 @@ namespace Frontend.Web.Controllers
         {
             var token = HttpContext.Session.GetString("JWT");
 
-            await _api.CreatePatientAsync(dto, token);
+            if (token == null)
+                return RedirectToAction("Login", "Auth");
 
+            if (!JwtSessionHelper.CanManagePatients(token))
+                return Forbid();
+
+            if (!ModelState.IsValid)
+                return View(dto);
+
+            await _api.CreatePatientAsync(dto, token);
             return RedirectToAction("Index");
         }
 
@@ -47,7 +64,6 @@ namespace Frontend.Web.Controllers
             var token = HttpContext.Session.GetString("JWT");
 
             var patient = await _api.GetPatientByIdAsync(id, token);
-
             return View(patient);
         }
 
@@ -57,7 +73,6 @@ namespace Frontend.Web.Controllers
             var token = HttpContext.Session.GetString("JWT");
 
             await _api.UpdatePatientAsync(dto, token);
-
             return RedirectToAction("Index");
         }
 
@@ -66,10 +81,17 @@ namespace Frontend.Web.Controllers
         {
             var token = HttpContext.Session.GetString("JWT");
 
-            await _api.AddNoteAsync(dto, token);
+            if (token == null)
+                return RedirectToAction("Login", "Auth");
 
+            // Organisers cannot add notes
+            if (!JwtSessionHelper.CanViewNotes(token))
+                return Forbid();
+
+            await _api.AddNoteAsync(dto, token);
             return RedirectToAction("Details", new { id = dto.PatientId });
         }
+
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
@@ -79,16 +101,17 @@ namespace Frontend.Web.Controllers
                 return RedirectToAction("Login", "Auth");
 
             var patient = await _api.GetPatientByIdAsync(id, token);
-            var notes = await _api.GetNotesAsync(id, token);
 
-            var vm = new PatientDetailsViewModel
+            // Only fetch notes for roles that are allowed to see them
+            var notes = JwtSessionHelper.CanViewNotes(token)
+                ? await _api.GetNotesAsync(id, token)
+                : new List<MedicalNoteDto>();
+
+            return View(new PatientDetailsViewModel
             {
                 Patient = patient,
                 Notes = notes
-            };
-
-            return View(vm);
+            });
         }
-
     }
 }

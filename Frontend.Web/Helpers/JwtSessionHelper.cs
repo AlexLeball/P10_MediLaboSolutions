@@ -22,7 +22,14 @@ namespace Frontend.Web.Helpers
                                  || c.Type == "role")
                ?.Value;
 
-        public static bool IsAdmin(string token)
-            => GetRole(token) == "Admin";
+        public static bool IsAdmin(string token)       => GetRole(token) == "Admin";
+        public static bool IsOrganiser(string token)   => GetRole(token) == "Organiser";
+        public static bool IsPractitioner(string token) => GetRole(token) == "Practitioner";
+
+        public static bool CanManagePatients(string token)
+            => IsAdmin(token) || IsOrganiser(token);
+
+        public static bool CanViewNotes(string token)
+            => IsAdmin(token) || IsPractitioner(token);
     }
 }

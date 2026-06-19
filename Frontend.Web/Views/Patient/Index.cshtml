@@ -1,6 +1,13 @@
-﻿@model List<Frontend.Web.Models.PatientDto>
+﻿@model IEnumerable<Frontend.Web.Models.PatientDto>
 
-<h2>Patients</h2>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Patients</h2>
+    @if (Frontend.Web.Helpers.JwtSessionHelper.CanManagePatients(
+            Context.Session.GetString("JWT") ?? ""))
+    {
+        <a asp-action="Create" class="btn btn-success">+ New Patient</a>
+    }
+</div>
 
 <table class="table">
     <thead>
@@ -12,7 +19,6 @@
             <th>Actions</th>
         </tr>
     </thead>
-
     <tbody>
         @foreach (var p in Model)
         {
@@ -21,21 +27,15 @@
                 <td>@p.FirstName</td>
                 <td>@p.LastName</td>
                 <td>@p.BirthDate.ToShortDateString()</td>
-
                 <td>
-                    <a asp-controller="Patient"
-                       asp-action="Edit"
-                       asp-route-id="@p.Id"
-                       class="btn btn-sm btn-primary">
-                        Edit
-                    </a>
-
-                    <a asp-controller="Patient"
-                       asp-action="Details"
-                       asp-route-id="@p.Id"
-                       class="btn btn-warning">
-                        Details
-                    </a>
+                    @if (Frontend.Web.Helpers.JwtSessionHelper.CanManagePatients(
+                            Context.Session.GetString("JWT") ?? ""))
+                    {
+                        <a asp-action="Edit" asp-route-id="@p.Id"
+                           class="btn btn-sm btn-primary">Edit</a>
+                    }
+                    <a asp-action="Details" asp-route-id="@p.Id"
+                       class="btn btn-sm btn-warning">Details</a>
                 </td>
             </tr>
         }
