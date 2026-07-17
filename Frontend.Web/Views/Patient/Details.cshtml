@@ -13,6 +13,13 @@
     {
         <p><b>Practitioner:</b> @Model.PractitionerName</p>
     }
+
+    <div class="mt-2">
+        <a asp-action="RiskReport" asp-route-id="@Model.Patient.Id"
+           class="btn btn-outline-info">
+            🩺 Risk Report
+        </a>
+    </div>
 </div>
 
 @if (JwtSessionHelper.CanViewNotes(Context.Session.GetString("JWT") ?? ""))

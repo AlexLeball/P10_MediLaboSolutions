@@ -1,0 +1,42 @@
+﻿@model Frontend.Web.Models.RiskReportDto
+
+@{
+    var (badgeClass, icon) = Model.RiskLevel switch
+    {
+        "None"         => ("bg-success",          "✅"),
+        "Borderline"   => ("bg-warning text-dark", "⚠️"),
+        "In Danger"    => ("bg-danger",            "🔴"),
+        "Early Onset"  => ("bg-dark",              "⛔"),
+        _              => ("bg-secondary",          "❓")
+    };
+}
+
+<h2 class="mb-4">🩺 Diabetes Risk Assessment</h2>
+
+<div class="card shadow-sm" style="max-width: 520px;">
+    <div class="card-header fw-bold fs-5">
+        @Model.FullName
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-5">Age</dt>
+            <dd class="col-sm-7">@Model.Age years</dd>
+
+            <dt class="col-sm-5">Trigger Count</dt>
+            <dd class="col-sm-7">@Model.TriggerCount / 12</dd>
+
+            <dt class="col-sm-5">Risk Level</dt>
+            <dd class="col-sm-7">
+                <span class="badge @badgeClass fs-6 px-3 py-2">
+                    @icon @Model.RiskLevel
+                </span>
+            </dd>
+        </dl>
+    </div>
+    <div class="card-footer bg-transparent">
+        <a asp-action="Details" asp-route-id="@Model.PatientId"
+           class="btn btn-secondary btn-sm">
+            ← Back to Patient
+        </a>
+    </div>
+</div>

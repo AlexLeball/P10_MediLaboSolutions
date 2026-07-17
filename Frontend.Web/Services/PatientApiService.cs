@@ -196,5 +196,21 @@ namespace Frontend.Web.Services
 
             return (false, await response.Content.ReadAsStringAsync());
         }
+
+
+        // ── Risk Assessment ───────────────────────────────────────────────────
+
+        public async Task<RiskReportDto?> GetRiskReportAsync(int patientId, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/risk/{patientId}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _http.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<RiskReportDto>();
+        }
     }
 }

@@ -125,5 +125,19 @@ namespace Frontend.Web.Controllers
                 PractitionerName = practitionerName
             });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> RiskReport(int id)
+        {
+            var token = HttpContext.Session.GetString("JWT");
+
+            if (token == null) return RedirectToAction("Login", "Auth");
+
+            var report = await _api.GetRiskReportAsync(id, token);
+
+            if (report == null) return NotFound();
+
+            return View(report);
+        }
     }
 }

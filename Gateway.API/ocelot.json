@@ -4,10 +4,7 @@
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7267
-        }
+        { "Host": "localhost", "Port": 7267 }
       ],
       "UpstreamPathTemplate": "/api/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
@@ -16,10 +13,7 @@
       "DownstreamPathTemplate": "/api/patient/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7267
-        }
+        { "Host": "localhost", "Port": 7267 }
       ],
       "UpstreamPathTemplate": "/api/patient/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ]
@@ -28,10 +22,7 @@
       "DownstreamPathTemplate": "/api/patient",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7267
-        }
+        { "Host": "localhost", "Port": 7267 }
       ],
       "UpstreamPathTemplate": "/api/patient",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ]
@@ -40,13 +31,19 @@
       "DownstreamPathTemplate": "/api/notes/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5234
-        }
+        { "Host": "localhost", "Port": 5234 }
       ],
       "UpstreamPathTemplate": "/api/notes/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/risk/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "localhost", "Port": 5100 }
+      ],
+      "UpstreamPathTemplate": "/api/risk/{everything}",
+      "UpstreamHttpMethod": [ "GET" ]
     }
   ],
   "GlobalConfiguration": {
