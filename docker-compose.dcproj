@@ -16,5 +16,9 @@
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
     <None Include="Properties\launchSettings.json" />
+    <None Include="Risk.API\appsettings.json" />
+    <None Include="Risk.API\Enums\RiskLevel.cs" />
+    <None Include="Risk.API\Properties\launchSettings.json" />
+    <None Include="Risk.API\Risk.API.csproj" />
   </ItemGroup>
 </Project>
