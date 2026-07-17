@@ -118,11 +118,14 @@ namespace Frontend.Web.Controllers
                 .FirstOrDefault(p => p.Id == patient?.PractitionerId)
                 ?.Name ?? "Unassigned";
 
+            var riskReport = await _api.GetRiskReportAsync(id, token);
+
             return View(new PatientDetailsViewModel
             {
                 Patient = patient,
                 Notes = notes,
-                PractitionerName = practitionerName
+                PractitionerName = practitionerName,
+                RiskReport = riskReport
             });
         }
 

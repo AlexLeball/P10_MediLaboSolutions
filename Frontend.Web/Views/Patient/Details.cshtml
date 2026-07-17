@@ -13,14 +13,40 @@
     {
         <p><b>Practitioner:</b> @Model.PractitionerName</p>
     }
-
-    <div class="mt-2">
-        <a asp-action="RiskReport" asp-route-id="@Model.Patient.Id"
-           class="btn btn-outline-info">
-            🩺 Risk Report
-        </a>
-    </div>
 </div>
+@if (Model.RiskReport != null && (JwtSessionHelper.CanViewNotes(Context.Session.GetString("JWT") ?? "")))
+{
+    
+        var (badgeClass, icon) = Model.RiskReport.RiskLevel switch
+        {
+            "None"        => ("bg-success",           "✅"),
+            "Borderline"  => ("bg-warning text-dark",  "⚠️"),
+            "In Danger"   => ("bg-danger",             "🔴"),
+            "Early Onset" => ("bg-dark",               "⛔"),
+            _             => ("bg-secondary",          "❓")
+        };
+    
+
+    <div class="card mb-3 border-info">
+        <div class="card-header fw-bold text-info">🩺 Diabetes Risk Assessment</div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Age</dt>
+                <dd class="col-sm-8">@Model.RiskReport.Age years</dd>
+
+                <dt class="col-sm-4">Triggers found</dt>
+                <dd class="col-sm-8">@Model.RiskReport.TriggerCount / 12</dd>
+
+                <dt class="col-sm-4">Risk Level</dt>
+                <dd class="col-sm-8">
+                    <span class="badge @badgeClass fs-6 px-3 py-1">
+                        @icon @Model.RiskReport.RiskLevel
+                    </span>
+                </dd>
+            </dl>
+        </div>
+    </div>
+}
 
 @if (JwtSessionHelper.CanViewNotes(Context.Session.GetString("JWT") ?? ""))
 {
