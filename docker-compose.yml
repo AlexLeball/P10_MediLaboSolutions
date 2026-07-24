@@ -1,54 +1,127 @@
-# services:
+services:
 
-#   sqlserver:
-#     image: mcr.microsoft.com/mssql/server:2022-latest
-#     container_name: sqlserver
-#     environment:
-#       ACCEPT_EULA: "Y"
-#       SA_PASSWORD: "MySuperStrong!Passw0rd"
-#     ports:
-#       - "1433:1433"
-#     healthcheck:
-#       test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P MySuperStrong!Passw0rd -Q \"SELECT 1\" -C"]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 15
-#       start_period: 30s
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "MySuperStrong!Passw0rd"
+    ports:
+      - "1433:1433"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P MySuperStrong!Passw0rd -Q \"SELECT 1\" -C"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    networks:
+      - medilabo
 
-#   patient.api:
-#     image: patientapi
-#     build:
-#       context: .
-#       dockerfile: Patient.API/Dockerfile
-#     depends_on:
-#       sqlserver:
-#         condition: service_healthy
-#     ports:
-#       - "5001:8080"
-#     environment:
-#       ASPNETCORE_URLS: http://+:8080
-#       ASPNETCORE_ENVIRONMENT: Development
-#       ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=PatientDb;User Id=sa;Password=MySuperStrong!Passw0rd;TrustServerCertificate=True;"
-#       Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
-#       Jwt__Issuer: PatientAPI
-#       Jwt__Audience: PatientClient
-#     command: ["dotnet", "Patient.API.dll"]
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - medilabo
 
-#   gateway.api:
-#     build:
-#       context: .
-#       dockerfile: Gateway.API/Dockerfile
-#     ports:
-#       - "5000:8080"
-#     environment:
-#       ASPNETCORE_URLS: http://+:8080
-#       Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
-#       Jwt__Issuer: PatientAPI
-#       Jwt__Audience: PatientClient
+  patient.api:
+    build:
+      context: .
+      dockerfile: Patient.API/Dockerfile
+    container_name: patient.api
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    ports:
+      - "5001:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=PatientDb;User Id=sa;Password=MySuperStrong!Passw0rd;TrustServerCertificate=True;"
+      Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
+      Jwt__Issuer: PatientAPI
+      Jwt__Audience: PatientClient
+    networks:
+      - medilabo
 
-#   frontend.web:
-#     build:
-#       context: .
-#       dockerfile: Frontend.Web/Dockerfile
-#     ports:
-#       - "5002:8080"
+  notes.api:
+    build:
+      context: .
+      dockerfile: Notes.API/Dockerfile
+    container_name: notes.api
+    depends_on:
+      - mongodb
+    ports:
+      - "5003:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      MongoDb__ConnectionString: mongodb://mongodb:27017
+      MongoDb__DatabaseName: NotesDb
+      Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
+      Jwt__Issuer: PatientAPI
+      Jwt__Audience: PatientClient
+    networks:
+      - medilabo
+
+  risk.api:
+    build:
+      context: .
+      dockerfile: Risk.API/Dockerfile
+    container_name: risk.api
+    depends_on:
+      - patient.api
+      - notes.api
+    ports:
+      - "5004:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
+      Jwt__Issuer: PatientAPI
+      Jwt__Audience: PatientClient
+      Services__PatientApi: http://patient.api:8080
+      Services__NotesApi: http://notes.api:8080
+    networks:
+      - medilabo
+
+  gateway.api:
+    build:
+      context: .
+      dockerfile: Gateway.API/Dockerfile
+    container_name: gateway.api
+    depends_on:
+      - patient.api
+      - notes.api
+      - risk.api
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
+      Jwt__Issuer: PatientAPI
+      Jwt__Audience: PatientClient
+    networks:
+      - medilabo
+
+  frontend.web:
+    build:
+      context: .
+      dockerfile: Frontend.Web/Dockerfile
+    container_name: frontend.web
+    depends_on:
+      - gateway.api
+    ports:
+      - "5002:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      GatewayUrl: http://gateway.api:8080
+    networks:
+      - medilabo
+
+networks:
+  medilabo:
+    driver: bridge
