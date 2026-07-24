@@ -118,12 +118,29 @@ namespace Frontend.Web.Controllers
                 .FirstOrDefault(p => p.Id == patient?.PractitionerId)
                 ?.Name ?? "Unassigned";
 
+            var riskReport = await _api.GetRiskReportAsync(id, token);
+
             return View(new PatientDetailsViewModel
             {
                 Patient = patient,
                 Notes = notes,
-                PractitionerName = practitionerName
+                PractitionerName = practitionerName,
+                RiskReport = riskReport
             });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RiskReport(int id)
+        {
+            var token = HttpContext.Session.GetString("JWT");
+
+            if (token == null) return RedirectToAction("Login", "Auth");
+
+            var report = await _api.GetRiskReportAsync(id, token);
+
+            if (report == null) return NotFound();
+
+            return View(report);
         }
     }
 }

@@ -2,36 +2,27 @@
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/auth/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7267
-        }
+        { "Host": "patient.api", "Port": 8080 }
       ],
       "UpstreamPathTemplate": "/api/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
     },
     {
       "DownstreamPathTemplate": "/api/patient/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7267
-        }
+        { "Host": "patient.api", "Port": 8080 }
       ],
       "UpstreamPathTemplate": "/api/patient/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ]
     },
     {
       "DownstreamPathTemplate": "/api/patient",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7267
-        }
+        { "Host": "patient.api", "Port": 8080 }
       ],
       "UpstreamPathTemplate": "/api/patient",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ]
@@ -40,16 +31,22 @@
       "DownstreamPathTemplate": "/api/notes/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5234
-        }
+        { "Host": "notes.api", "Port": 8080 }
       ],
       "UpstreamPathTemplate": "/api/notes/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/risk/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "risk.api", "Port": 8080 }
+      ],
+      "UpstreamPathTemplate": "/api/risk/{everything}",
+      "UpstreamHttpMethod": [ "GET" ]
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:5292"
+    "BaseUrl": "http://gateway.api:8080"
   }
 }
