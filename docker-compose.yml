@@ -8,6 +8,8 @@ services:
       SA_PASSWORD: "MySuperStrong!Passw0rd"
     ports:
       - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
     healthcheck:
       test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P MySuperStrong!Passw0rd -Q \"SELECT 1\" -C"]
       interval: 10s
@@ -22,6 +24,8 @@ services:
     container_name: mongodb
     ports:
       - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
     networks:
       - medilabo
 
@@ -125,3 +129,9 @@ services:
 networks:
   medilabo:
     driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  sqlserver_data:
+    driver: local

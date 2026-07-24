@@ -28,6 +28,15 @@
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ]
     },
     {
+      "DownstreamPathTemplate": "/api/notes",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        { "Host": "notes.api", "Port": 8080 }
+      ],
+      "UpstreamPathTemplate": "/api/notes",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/notes/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
