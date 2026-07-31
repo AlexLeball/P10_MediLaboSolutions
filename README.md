@@ -177,22 +177,6 @@ Additional documentation:
 
 - [`GREENCODE.md`](./GREENCODE.md)
 
----
-
-# Repository Structure
-
-```text
-P10_MediLaboSolutions/
-├── Frontend.Web/              # Web application for medical staff (MVC)
-├── Gateway.API/               # API Gateway (Ocelot)
-├── Patient.API/               # Patient management microservice
-├── Notes.API/                 # Medical notes microservice
-├── Risk.API/                  # Diabetes risk assessment microservice
-├── P10_MediLaboSolutions.sln  # Visual Studio solution
-├── docker-compose.yml         # Docker Compose configuration
-├── README.md                  # Project documentation
-└── GREENCODE.md               # Green Code analysis and recommendations
-```
 
 ---
 
