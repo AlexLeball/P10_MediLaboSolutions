@@ -190,4 +190,3 @@ MediLabo Solutions demonstrates a modern healthcare-oriented backend architectur
 - separate data storage strategies
 - automated risk evaluation logic
 
-This project is intended as an educational implementation demonstrating .NET microservices concepts, API security, database integration, and cloud-ready deployment practices.
