@@ -22,6 +22,7 @@
 **/secrets.dev.yaml
 **/values.dev.yaml
 LICENSE
+GREENCODE.md
 README.md
 !**/.gitignore
 !.git/HEAD
