@@ -1,3 +1,10 @@
+x-common-env: &common-env
+  ASPNETCORE_ENVIRONMENT: Development
+  ASPNETCORE_URLS: http://+:8080
+  Jwt__Key: ${JWT_KEY}
+  Jwt__Issuer: PatientAPI
+  Jwt__Audience: PatientClient
+
 services:
 
   sqlserver:
@@ -5,13 +12,13 @@ services:
     container_name: sqlserver
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: "MySuperStrong!Passw0rd"
+      SA_PASSWORD: ${SA_PASSWORD}
     ports:
       - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P MySuperStrong!Passw0rd -Q \"SELECT 1\" -C"]
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $$SA_PASSWORD -Q \"SELECT 1\" -C"]
       interval: 10s
       timeout: 5s
       retries: 15
@@ -40,12 +47,8 @@ services:
     ports:
       - "5001:8080"
     environment:
-      ASPNETCORE_URLS: http://+:8080
-      ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=PatientDb;User Id=sa;Password=MySuperStrong!Passw0rd;TrustServerCertificate=True;"
-      Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
-      Jwt__Issuer: PatientAPI
-      Jwt__Audience: PatientClient
+      <<: *common-env
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=PatientDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;"
     networks:
       - medilabo
 
@@ -59,13 +62,9 @@ services:
     ports:
       - "5003:8080"
     environment:
-      ASPNETCORE_URLS: http://+:8080
-      ASPNETCORE_ENVIRONMENT: Development
+      <<: *common-env
       MongoDb__ConnectionString: mongodb://mongodb:27017
       MongoDb__DatabaseName: NotesDb
-      Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
-      Jwt__Issuer: PatientAPI
-      Jwt__Audience: PatientClient
     networks:
       - medilabo
 
@@ -80,11 +79,7 @@ services:
     ports:
       - "5004:8080"
     environment:
-      ASPNETCORE_URLS: http://+:8080
-      ASPNETCORE_ENVIRONMENT: Development
-      Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
-      Jwt__Issuer: PatientAPI
-      Jwt__Audience: PatientClient
+      <<: *common-env
       Services__PatientApi: http://patient.api:8080
       Services__NotesApi: http://notes.api:8080
     networks:
@@ -102,11 +97,7 @@ services:
     ports:
       - "5000:8080"
     environment:
-      ASPNETCORE_URLS: http://+:8080
-      ASPNETCORE_ENVIRONMENT: Development
-      Jwt__Key: THIS_IS_MY_ULTRA_LONG_SUPER_SECRET_KEY_123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ
-      Jwt__Issuer: PatientAPI
-      Jwt__Audience: PatientClient
+      <<: *common-env
     networks:
       - medilabo
 

@@ -10,10 +10,9 @@
     <DockerServiceName>frontend.web</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="docker-compose.override.yml">
-      <DependentUpon>docker-compose.yml</DependentUpon>
-    </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include=".env" />
+    <None Include="dotenv .env" />
   </ItemGroup>
 </Project>
