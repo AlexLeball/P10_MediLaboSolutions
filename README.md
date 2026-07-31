@@ -131,6 +131,7 @@ dotnet run --project Risk.API
 dotnet run --project Gateway.API
 dotnet run --project Frontend.Web
 ```
+Alternatively use Visual Studio to create a new start profile to launch all projects on debug. 
 
 When running locally, update the configuration files:
 
