@@ -49,6 +49,8 @@ services:
     environment:
       <<: *common-env
       ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=PatientDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;"
+      SeedAdmin__Email: ${SeedAdmin__Email}
+      SeedAdmin__Password: ${SeedAdmin__Password}
     networks:
       - medilabo
 

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Green Code – Analysis and Recommendations
+=======
+# Green Code â€“ Analysis and Recommendations
+>>>>>>> 0b7a796b975b72deef24348b83e14c9557fd5cc6
 
 ## 1. Goal of Green Code
 
@@ -44,4 +48,8 @@ Beyond specific code fixes, a Green Code approach typically looks at:
 
 ## 4. Conclusion
 
+<<<<<<< HEAD
 Green Code is not only about performance—it is a **sobriety-driven approach** that systematically questions the real resource needs at every stage: architectural choices, data access, deployment strategy, and infrastructure sizing. While this project is not being fully re-engineered around these principles, understanding these concepts and applying a critical eye to current design decisions helps identify realistic and impactful opportunities for future optimization.
+=======
+Green Code is not only about performanceâ€”it is a **sobriety-driven approach** that systematically questions the real resource needs at every stage: architectural choices, data access, deployment strategy, and infrastructure sizing. While this project is not being fully re-engineered around these principles, understanding these concepts and applying a critical eye to current design decisions helps identify realistic and impactful opportunities for future optimization.
+>>>>>>> 0b7a796b975b72deef24348b83e14c9557fd5cc6

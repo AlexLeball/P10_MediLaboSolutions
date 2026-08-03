@@ -175,10 +175,14 @@ using (var scope = app.Services.CreateScope())
 
     // Seed a default admin if none exists
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    if (await userManager.FindByEmailAsync("admin@medilabo.com") == null)
+    var seedEmail = builder.Configuration["SeedAdmin:Email"];
+    var seedPassword = builder.Configuration["SeedAdmin:Password"];
+
+    if (!string.IsNullOrWhiteSpace(seedEmail) && !string.IsNullOrWhiteSpace(seedPassword)
+        && await userManager.FindByEmailAsync(seedEmail) == null)
     {
-        var admin = new ApplicationUser { UserName = "admin@medilabo.com", Email = "admin@medilabo.com" };
-        await userManager.CreateAsync(admin, "Admin1234!");
+        var admin = new ApplicationUser { UserName = seedEmail, Email = seedEmail };
+        await userManager.CreateAsync(admin, seedPassword);
         await userManager.AddToRoleAsync(admin, "Admin");
     }
 }
