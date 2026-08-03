@@ -131,6 +131,7 @@ dotnet run --project Risk.API
 dotnet run --project Gateway.API
 dotnet run --project Frontend.Web
 ```
+Alternatively use Visual Studio to create a new start profile to launch all projects on debug. 
 
 When running locally, update the configuration files:
 
@@ -176,22 +177,6 @@ Additional documentation:
 
 - [`GREENCODE.md`](./GREENCODE.md)
 
----
-
-# Repository Structure
-
-```text
-P10_MediLaboSolutions/
-├── Frontend.Web/              # Web application for medical staff (MVC)
-├── Gateway.API/               # API Gateway (Ocelot)
-├── Patient.API/               # Patient management microservice
-├── Notes.API/                 # Medical notes microservice
-├── Risk.API/                  # Diabetes risk assessment microservice
-├── P10_MediLaboSolutions.sln  # Visual Studio solution
-├── docker-compose.yml         # Docker Compose configuration
-├── README.md                  # Project documentation
-└── GREENCODE.md               # Green Code analysis and recommendations
-```
 
 ---
 
@@ -205,4 +190,3 @@ MediLabo Solutions demonstrates a modern healthcare-oriented backend architectur
 - separate data storage strategies
 - automated risk evaluation logic
 
-This project is intended as an educational implementation demonstrating .NET microservices concepts, API security, database integration, and cloud-ready deployment practices.
