@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Frontend.Web.Models.PatientDto>
+@using Frontend.Web.Helpers
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Patients</h2>
+    @if (JwtSessionHelper.CanManagePatients(Context.Session.GetString("JWT") ?? ""))
+    {
+        <a asp-action="Create" class="btn btn-success">+ New Patient</a>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No patients found.
+        @if (JwtSessionHelper.CanManagePatients(Context.Session.GetString("JWT") ?? ""))
+        {
+            <a asp-action="Create" class="alert-link">Add the first patient.</a>
+        }
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Birth date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.Id</td>
+                    <td>@p.FirstName</td>
+                    <td>@p.LastName</td>
+                    <td>@p.BirthDate.ToShortDateString()</td>
+                    <td>
+                        @if (JwtSessionHelper.CanManagePatients(
+                                Context.Session.GetString("JWT") ?? ""))
+                        {
+                            <a asp-action="Edit" asp-route-id="@p.Id"
+                               class="btn btn-sm btn-primary">Edit</a>
+                        }
+                        <a asp-action="Details" asp-route-id="@p.Id"
+                           class="btn btn-sm btn-warning">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

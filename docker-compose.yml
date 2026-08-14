@@ -1,0 +1,130 @@
+x-common-env: &common-env
+  ASPNETCORE_ENVIRONMENT: Development
+  ASPNETCORE_URLS: http://+:8080
+  Jwt__Key: ${JWT_KEY}
+  Jwt__Issuer: PatientAPI
+  Jwt__Audience: PatientClient
+
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: ${SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $$SA_PASSWORD -Q \"SELECT 1\" -C"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    networks:
+      - medilabo
+
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - medilabo
+
+  patient.api:
+    build:
+      context: .
+      dockerfile: Patient.API/Dockerfile
+    container_name: patient.api
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    ports:
+      - "5001:8080"
+    environment:
+      <<: *common-env
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=PatientDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;"
+      SeedAdmin__Email: ${SeedAdmin__Email}
+      SeedAdmin__Password: ${SeedAdmin__Password}
+    networks:
+      - medilabo
+
+  notes.api:
+    build:
+      context: .
+      dockerfile: Notes.API/Dockerfile
+    container_name: notes.api
+    depends_on:
+      - mongodb
+    ports:
+      - "5003:8080"
+    environment:
+      <<: *common-env
+      MongoDb__ConnectionString: mongodb://mongodb:27017
+      MongoDb__DatabaseName: NotesDb
+    networks:
+      - medilabo
+
+  risk.api:
+    build:
+      context: .
+      dockerfile: Risk.API/Dockerfile
+    container_name: risk.api
+    depends_on:
+      - patient.api
+      - notes.api
+    ports:
+      - "5004:8080"
+    environment:
+      <<: *common-env
+      Services__PatientApi: http://patient.api:8080
+      Services__NotesApi: http://notes.api:8080
+    networks:
+      - medilabo
+
+  gateway.api:
+    build:
+      context: .
+      dockerfile: Gateway.API/Dockerfile
+    container_name: gateway.api
+    depends_on:
+      - patient.api
+      - notes.api
+      - risk.api
+    ports:
+      - "5000:8080"
+    environment:
+      <<: *common-env
+    networks:
+      - medilabo
+
+  frontend.web:
+    build:
+      context: .
+      dockerfile: Frontend.Web/Dockerfile
+    container_name: frontend.web
+    depends_on:
+      - gateway.api
+    ports:
+      - "5002:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      GatewayUrl: http://gateway.api:8080
+    networks:
+      - medilabo
+
+networks:
+  medilabo:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  sqlserver_data:
+    driver: local

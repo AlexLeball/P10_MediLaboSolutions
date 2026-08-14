@@ -1,0 +1,6 @@
+@Risk.API_HostAddress = http://localhost:5027
+
+GET {{Risk.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

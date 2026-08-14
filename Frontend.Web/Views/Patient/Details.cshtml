@@ -1,0 +1,78 @@
+﻿@model Frontend.Web.Models.PatientDetailsViewModel
+@using Frontend.Web.Helpers
+
+<h2>Patient Details</h2>
+
+<div class="card p-3 mb-3">
+    <h4>@Model.Patient.FirstName @Model.Patient.LastName</h4>
+    <p><b>Birth Date:</b> @Model.Patient.BirthDate.ToShortDateString()</p>
+    <p><b>Gender:</b> @Model.Patient.Gender</p>
+    <p><b>Address:</b> @Model.Patient.Address</p>
+    <p><b>Phone:</b> @Model.Patient.PhoneNumber</p>
+    @if (!JwtSessionHelper.IsPractitioner(Context.Session.GetString("JWT") ?? ""))
+    {
+        <p><b>Practitioner:</b> @Model.PractitionerName</p>
+    }
+</div>
+@if (Model.RiskReport != null && (JwtSessionHelper.CanViewNotes(Context.Session.GetString("JWT") ?? "")))
+{
+    
+        var (badgeClass, icon) = Model.RiskReport.RiskLevel switch
+        {
+            "None"        => ("bg-success",           "✅"),
+            "Borderline"  => ("bg-warning text-dark",  "⚠️"),
+            "In Danger"   => ("bg-danger",             "🔴"),
+            "Early Onset" => ("bg-dark",               "⛔"),
+            _             => ("bg-secondary",          "❓")
+        };
+    
+
+    <div class="card mb-3 border-info">
+        <div class="card-header fw-bold text-info">🩺 Diabetes Risk Assessment</div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Age</dt>
+                <dd class="col-sm-8">@Model.RiskReport.Age years</dd>
+
+                <dt class="col-sm-4">Triggers found</dt>
+                <dd class="col-sm-8">@Model.RiskReport.TriggerCount / 12</dd>
+
+                <dt class="col-sm-4">Risk Level</dt>
+                <dd class="col-sm-8">
+                    <span class="badge @badgeClass fs-6 px-3 py-1">
+                        @icon @Model.RiskReport.RiskLevel
+                    </span>
+                </dd>
+            </dl>
+        </div>
+    </div>
+}
+
+@if (JwtSessionHelper.CanViewNotes(Context.Session.GetString("JWT") ?? ""))
+{
+    <hr />
+
+    <h3>Medical Notes</h3>
+
+    @foreach (var note in Model.Notes)
+    {
+        <div class="border p-2 mb-2">
+            <strong>@Model.Patient.FirstName @Model.Patient.LastName</strong>
+            <pre style="white-space: pre-wrap">@note.Content</pre>
+            <small>Created: @note.CreatedAt</small>
+            <br />
+            <small>By: @note.Author</small>
+        </div>
+    }
+
+    <hr />
+
+    <h4>Add Note</h4>
+
+    <form asp-action="AddNote" method="post">
+        <input type="hidden" name="PatientId" value="@Model.Patient.Id" />
+        <textarea name="Content" class="form-control"></textarea>
+        <button class="btn btn-primary mt-2">Add Note</button>
+    </form>
+}
+
