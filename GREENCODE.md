@@ -1,5 +1,3 @@
-# Green Code – Analysis and Recommendations
-=======
 # Green Code Analysis and Recommendations
 
 ## 1. Goal of Green Code
